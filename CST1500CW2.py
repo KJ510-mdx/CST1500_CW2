@@ -29,20 +29,17 @@ class SJFApp:
 
     # ---------- UI construction ----------
     def _build_ui(self):
-        # --- Input row: burst time + add button ---
+       
         input_frame = ttk.LabelFrame(self.root, text="Add a process")
         input_frame.pack(fill="x", padx=10, pady=8)
-
         ttk.Label(input_frame, text="Burst time:").pack(side="left", padx=6, pady=6)
         self.burst_entry = ttk.Entry(input_frame, width=10)
         self.burst_entry.pack(side="left", padx=6)
-        # Pressing Enter in the entry adds the process too
         self.burst_entry.bind("<Return>", lambda e: self.add_process())
-
         ttk.Button(input_frame, text="Add", command=self.add_process).pack(side="left", padx=6)
         ttk.Button(input_frame, text="Clear all", command=self.clear_all).pack(side="left", padx=6)
 
-        # --- Table of processes / results ---
+       
         table_frame = ttk.LabelFrame(self.root, text="Processes")
         table_frame.pack(fill="both", expand=True, padx=10, pady=8)
 
@@ -66,7 +63,7 @@ class SJFApp:
         self.canvas = tk.Canvas(gantt_frame, height=90, bg="white")
         self.canvas.pack(fill="x", padx=6, pady=6)
 
-        # --- Run button + average label ---
+     
         bottom = ttk.Frame(self.root)
         bottom.pack(fill="x", padx=10, pady=8)
 
@@ -77,7 +74,6 @@ class SJFApp:
                                    font=("Segoe UI", 10, "bold"))
         self.avg_label.pack(side="right")
 
-    # ---------- Actions ----------
     def add_process(self):
         raw = self.burst_entry.get().strip()
         if not raw.isdigit() or int(raw) <= 0:
@@ -117,7 +113,7 @@ class SJFApp:
             total_waiting += current_time
             current_time += p.burst_time
 
-        # Refill the table in scheduled order
+        
         self.tree.delete(*self.tree.get_children())
         for p in self.processes:
             self.tree.insert("", "end", iid=str(p.pid),
@@ -128,17 +124,13 @@ class SJFApp:
         avg = total_waiting / len(self.processes)
         self.avg_label.config(text=f"Average Waiting Time: {avg:.2f}")
 
-        # Run the "execution" in a background thread so the window
-        # stays responsive while each process simulates its burst.
         self.running = True
         self.run_btn.config(state="disabled")
         worker = threading.Thread(target=self._simulate, daemon=True)
         worker.start()
 
     def _simulate(self):
-        """Runs in a background thread. It must NOT touch Tkinter widgets
-        directly -- Tkinter isn't thread-safe -- so all UI updates are
-        pushed back to the main thread via root.after()."""
+
         for p in self.processes:
             self._ui(lambda pid=p.pid: self.tree.set(str(pid), "status", "running"))
             time.sleep(p.burst_time / 5)  # simulate the CPU burst (scaled)
@@ -150,7 +142,7 @@ class SJFApp:
         self.run_btn.config(state="normal")
 
     def _ui(self, fn):
-        """Schedule a UI update on the main thread."""
+       
         self.root.after(0, fn)
 
     def draw_gantt(self):
