@@ -5,7 +5,7 @@ import threading
 class Roundrobin:
     COLORS = ["RED", "GREEN", "BLUE", "#ff7008", "#05ffda", "#ba88ff"] # the colors im going to use for the chart
 
-# for main class 
+# for main class
     def __init__(self, root):
         self.root = root 
         self.root.title("Round Robin Super Duper Scheduler")
